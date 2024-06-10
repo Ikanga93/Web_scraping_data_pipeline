@@ -16,8 +16,6 @@ code_log = 'code_log.txt'
 db_name = 'banks.db'
 table_name = 'Largest_banks'
 csv_path = './Largest_banks_data.csv'
-#df = pd.DataFrame(columns=['Name', 'MC_USD_Billion'])
-#count = 0
 
 # Function to extract data from the web.
 def extract(url, table_attribs):
@@ -79,7 +77,7 @@ def transform():
 
         return data
 
-    csv_file = 'data_projects/World_banks/exchange_rate.csv'
+    csv_file = 'exchange_rate.csv'
     exchange_rate = csv_to_dict(csv_file)
     #print(exchange_rate)
 

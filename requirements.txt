@@ -1,5 +1,6 @@
 pandas
 requests
-BeautifulSoup4
+BeautifulSoup
 numpy
 datetime
+psycopg2

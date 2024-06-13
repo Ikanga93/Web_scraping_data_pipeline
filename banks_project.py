@@ -2,13 +2,14 @@
 
 # Importing the required libraries
 import pandas as pd
-import sqlite3
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
 import datetime
 import logging
 import csv
+import sqlite3
+
 
 code_log = 'code_log.txt'
 
@@ -51,8 +52,6 @@ def extract(url, table_attribs):
             break
     return df        
 df = extract('https://web.archive.org/web/20230908091635/https://en.wikipedia.org/wiki/List_of_largest_banks', {'class': 'wikitable sortable mw-collapsible jquery-tablesorter mw-made-collapsible'})
-#print(extract('https://web.archive.org/web/20230908091635/https://en.wikipedia.org/wiki/List_of_largest_banks', {'class': 'wikitable sortable mw-collapsible jquery-tablesorter mw-made-collapsible'}))
-#print(df)
 
 # Function to transform data.
 def transform():
@@ -60,6 +59,8 @@ def transform():
     # Removing string data type in the column Market cap (US$ billion) and Rank so perfom the multiplication.
     df['Market cap (US$ billion)'] = df['Market cap (US$ billion)'].replace(r'\n', '', regex=True).astype(float)
     df['Rank'] = df['Rank'].str.replace('\n', '')
+    # Changing name of the column Market cap (US$ billion).
+    # df = df.rename(columns={'Market cap (US$ billion)': 'Market_cap_US_billion'})
 
     def csv_to_dict(csv_file):
         # Initialize an empty list to store dictionaries
@@ -79,7 +80,6 @@ def transform():
 
     csv_file = 'exchange_rate.csv'
     exchange_rate = csv_to_dict(csv_file)
-    #print(exchange_rate)
 
     # Our data is a list of dictionary instead of just a dictionary, so we need to find each rate by iterating through each dictionary.
     # For GBP
@@ -100,13 +100,14 @@ def transform():
      # Convert gbp_exchange_rate to float
     inr_exchange_rate = float(inr_exchange_rate)
 
+    # Changing name of the column Market cap (US$ billion).
+    # df = df.rename(columns={'Market cap (US$ billion)': 'Market_cap_US_billion'})
+
     # Adding 3 different columns to the dataframe and round the resulting data to 2 decimal places.
     df['MC_GBP_Billion'] = [np.round(float(x) * gbp_exchange_rate, 2) for x in df['Market cap (US$ billion)']]
     df['MC_EUR_Billion'] = [np.round(float(x) * eur_exchange_rate, 2) for x in df['Market cap (US$ billion)']]
     df['MC_INR_Billion'] = [np.round(float(x) * inr_exchange_rate, 2) for x in df['Market cap (US$ billion)']]
-    # or
-    #df['MC_GBP_Billion'] = df['Market cap (US$ billion)'].apply(lambda x: np.round(x * gbp_exchange_rate, 2))
-
+    
     return df
 
 cleaned_df = transform()
@@ -122,6 +123,7 @@ def load_to_csv():
 load_to_csv() 
 
 # Function to load the transformed data frame to an SQL database.
+
 def load_to_db():
 
     conn = sqlite3.connect('banks.db')
@@ -135,3 +137,4 @@ load_to_db()
 # Function to run queries on database.
 def run_queries():
     pass
+
